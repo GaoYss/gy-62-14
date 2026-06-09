@@ -29,7 +29,8 @@ def list_notifications(active=None, level=None, target_group=None):
     if target_group:
         queryset = queryset.filter(target_group=target_group)
     results = [serialize_notification(item) for item in queryset]
-    results.sort(key=lambda n: (LEVEL_ORDER.get(n["level"], 99), n["published_at"]))
+    results.sort(key=lambda n: n["published_at"], reverse=True)
+    results.sort(key=lambda n: LEVEL_ORDER.get(n["level"], 99))
     return results
 
 

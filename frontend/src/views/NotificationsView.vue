@@ -34,7 +34,10 @@
       <div v-else class="notice-grid">
         <div v-for="item in notifications" :key="item.id" :class="['notice-card', { pinned: item.level === 'critical' }]">
           <div class="notice-title">
-            <strong>{{ item.title }}</strong>
+            <div class="title-left">
+              <span v-if="item.level === 'critical'" class="pin-badge">置顶</span>
+              <strong>{{ item.title }}</strong>
+            </div>
             <span :class="['badge', item.level]">{{ levelText[item.level] }}</span>
           </div>
           <p>{{ item.content }}</p>
