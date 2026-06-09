@@ -30,7 +30,11 @@
           </select>
         </label>
       </div>
-      <EmptyState v-if="notifications.length === 0" />
+      <EmptyState v-if="notifications.length === 0 && !isFiltering" />
+      <div v-else-if="notifications.length === 0 && isFiltering" class="empty-state">
+        <strong>未找到匹配的通知</strong>
+        <span>当前筛选条件下没有匹配的通知，请调整筛选条件后重试。</span>
+      </div>
       <div v-else class="notice-grid">
         <div v-for="item in notifications" :key="item.id" :class="['notice-card', { pinned: item.level === 'critical' }]">
           <div class="notice-title">
@@ -53,7 +57,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import NotificationForm from '../components/NotificationForm.vue'
 import PageHeader from '../components/PageHeader.vue'
@@ -73,6 +77,7 @@ const initialForm = {
   is_active: true
 }
 const form = reactive({ ...initialForm })
+const isFiltering = computed(() => !!filterLevel.value || !!filterTarget.value)
 
 onMounted(loadNotifications)
 

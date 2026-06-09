@@ -44,9 +44,12 @@
         <h3>紧急通知</h3>
         <EmptyState v-if="notifications.length === 0" />
         <ul v-else class="list">
-          <li v-for="item in notifications.slice(0, 5)" :key="item.id">
+          <li v-for="item in notifications.slice(0, 5)" :key="item.id" :class="{ pinned: item.level === 'critical' }">
             <div>
-              <strong>{{ item.title }}</strong>
+              <div class="title-row">
+                <span v-if="item.level === 'critical'" class="pin-badge">置顶</span>
+                <strong>{{ item.title }}</strong>
+              </div>
               <span>{{ item.content }}</span>
             </div>
             <em :class="['badge', item.level]">{{ levelText[item.level] }}</em>
