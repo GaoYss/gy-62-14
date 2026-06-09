@@ -10,9 +10,29 @@
 
     <article class="panel">
       <h3>通知列表</h3>
+      <div class="filter-bar">
+        <label>
+          级别
+          <select v-model="filterLevel" @change="loadNotifications">
+            <option value="">全部级别</option>
+            <option value="critical">紧急</option>
+            <option value="warning">重要</option>
+            <option value="info">普通</option>
+          </select>
+        </label>
+        <label>
+          受众
+          <select v-model="filterTarget" @change="loadNotifications">
+            <option value="">全部受众</option>
+            <option value="all">全部</option>
+            <option value="families">家属</option>
+            <option value="staff">员工</option>
+          </select>
+        </label>
+      </div>
       <EmptyState v-if="notifications.length === 0" />
       <div v-else class="notice-grid">
-        <div v-for="item in notifications" :key="item.id" class="notice-card">
+        <div v-for="item in notifications" :key="item.id" :class="['notice-card', { pinned: item.level === 'critical' }]">
           <div class="notice-title">
             <strong>{{ item.title }}</strong>
             <span :class="['badge', item.level]">{{ levelText[item.level] }}</span>
@@ -38,6 +58,8 @@ import { notificationsApi } from '../services/notifications'
 
 const notifications = ref([])
 const message = ref('')
+const filterLevel = ref('')
+const filterTarget = ref('')
 const levelText = { info: '普通', warning: '重要', critical: '紧急' }
 const targetText = { all: '全部', families: '家属', staff: '员工' }
 const initialForm = {
@@ -52,7 +74,10 @@ const form = reactive({ ...initialForm })
 onMounted(loadNotifications)
 
 async function loadNotifications() {
-  notifications.value = (await notificationsApi.list()).results
+  const params = {}
+  if (filterLevel.value) params.level = filterLevel.value
+  if (filterTarget.value) params.target_group = filterTarget.value
+  notifications.value = (await notificationsApi.list(params)).results
 }
 
 async function saveNotification() {

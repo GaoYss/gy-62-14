@@ -16,7 +16,9 @@ def notifications_collection(request):
     if request.method == "GET":
         active = request.GET.get("active")
         active_value = None if active is None else active.lower() == "true"
-        return list_response(list_notifications(active_value))
+        level = request.GET.get("level") or None
+        target_group = request.GET.get("target_group") or None
+        return list_response(list_notifications(active_value, level, target_group))
 
     try:
         notification = create_notification(parse_json(request))

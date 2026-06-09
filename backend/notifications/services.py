@@ -17,11 +17,20 @@ def serialize_notification(notification):
     }
 
 
-def list_notifications(active=None):
+LEVEL_ORDER = {"critical": 0, "warning": 1, "info": 2}
+
+
+def list_notifications(active=None, level=None, target_group=None):
     queryset = EmergencyNotification.objects.all()
     if active is not None:
         queryset = queryset.filter(is_active=active)
-    return [serialize_notification(item) for item in queryset]
+    if level:
+        queryset = queryset.filter(level=level)
+    if target_group:
+        queryset = queryset.filter(target_group=target_group)
+    results = [serialize_notification(item) for item in queryset]
+    results.sort(key=lambda n: (LEVEL_ORDER.get(n["level"], 99), n["published_at"]))
+    return results
 
 
 def create_notification(payload):
